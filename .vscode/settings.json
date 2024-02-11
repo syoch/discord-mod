@@ -1,0 +1,9 @@
+{
+  "saveAndRun": {
+    "commands": [
+      {
+        "cmd": "bun run build"
+      }
+    ]
+  }
+}

@@ -2,8 +2,12 @@
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist"
   },
-  "dependencies": {},
+  "dependencies": { "eslint": "^8.56.0" },
   "devDependencies": {
-    "typescript": "^5.3.3"
-  }
+    "typescript": "^5.3.3",
+    "@types/bun": "latest"
+  },
+  "name": "discord-mod",
+  "module": "index.ts",
+  "type": "module"
 }

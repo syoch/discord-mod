@@ -11,7 +11,8 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "oven.bun-vscode",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "wk-j.save-and-run"
       ]
     }
   }

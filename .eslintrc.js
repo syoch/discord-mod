@@ -2,10 +2,7 @@ module.exports = {
   ignorePatterns: [
     'dist/**/*.js'
   ],
-  extends: [
-    '@munierujp/eslint-config-typescript',
-    'plugin:jest/recommended'
-  ],
+  extends: [],
   parserOptions: {
     project: './tsconfig.json'
   }
