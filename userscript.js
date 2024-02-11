@@ -266,7 +266,7 @@ class MessageCustomizer {
     /** @type {MessageHooks} */
     this.message_hooks = [];
 
-    this.message_module = this.patcher.findModule(x => x?.default && x?.renderAutomodMessageMarkup, { raw_module: true });
+    this.message_module = this.patcher.findModule(x => x?.default && x?.renderAutomodMessageMarkup, { usingRawModule: true });
 
     ((original) => {
       Object.defineProperty(this.message_module, "default", {
@@ -354,14 +354,14 @@ class CustomReactComponents {
           value: enableHardwareAcceleration,
           onChange: useCallback(e => {
             this.DiscordUI.openModal(t => jsx(this.DiscordUI.ConfirmModal, {
-              header: this.L10N.default.Messages.SWITCH_HARDWARE_ACCELERATION,
+              header: "モーダルのタイトル",
               confirmText: "OK",
               cancelText: "キャンセル",
               onConfirm: () => this.HWAccel.default.setEnableHardwareAcceleration(e),
               ...t,
               children: jsx(this.DiscordUI.Text, {
                 variant: "text-sm/normal",
-                children: this.L10N.default.Messages.SWITCH_HARDWARE_ACCELERATION_BODY
+                children: "モーダルの本文"
               })
             }))
           }, []),
@@ -531,8 +531,6 @@ class DiscordPatcher {
     }
   }
 
-
-
   // Bulk Patch
   async doPatch() {
     let modules = await getDiscordModules(this);
@@ -565,15 +563,21 @@ class DiscordPatcher {
         const store = await patcher.getNode("DeveloperExperimentStore");
         store.actionHandler["CONNECTION_OPEN"]();
       }),
+
+      this.patch("Appearance|ShowAllItems", async (patcher) => {
+        await waitEnableFor(() => patcher.req.c[800751]?.loaded, 5000);
+        patcher.req("800751").default.prototype.getPredicateSections = function () {
+          globalThis.sections = this.props.sections;
+          return [
+            ...this.props.sections,
+            { section: 'My Account', label: 'hehe' }
+          ]
+        }
+      })
     ]);
   }
 
 }
-
-
-/*
-*
-*/
 
 window.addEventListener('load', async () => {
   let notify_interval = setInterval(() => {

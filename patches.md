@@ -24,3 +24,4 @@
 - [x] 開発者フラグを立てるやつ (Dev|isDeveloepr)
 - [x] Experiment を有効化するやつ (Reload|ExperimentStore)
 - [x] 何だったか忘れたやつ (Reload|DeveloperExperimentStore)
+- [ ] 設定の UI のやつで全部出すやつ (Appearance|ShowAllItems)
