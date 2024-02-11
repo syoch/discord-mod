@@ -23,10 +23,11 @@ export default class DiscordPatcher {
       getUsers: () => { [key: number]: User };
       getCurrentUser: () => User;
     };
-    const isUserModule = (module: object) => Boolean(
-      (module as UserModule)?.getUsers
-      && (module as UserModule)?.getCurrentUser,
-    );
+    const isUserModule = (module: object) =>
+      Boolean(
+        (module as UserModule)?.getUsers &&
+          (module as UserModule)?.getCurrentUser,
+      );
 
     type DeveloperMod = {
       isDeveloper: boolean;
@@ -38,25 +39,22 @@ export default class DiscordPatcher {
         bucket: number;
       };
     };
-    const isDeveloperModule = (module: object) => typeof (module as DeveloperMod)?.isDeveloper === "boolean";
+    const isDeveloperModule = (module: object) =>
+      typeof (module as DeveloperMod)?.isDeveloper === "boolean";
 
     type DeveloperLiterals = {
       ExperimentBuckets: {
         TREATMENT_1: number;
       };
     };
-    const isDeveloperLiteralsModule = (module: object) => Boolean(
-      (module as DeveloperLiterals)?.ExperimentBuckets?.TREATMENT_1,
-    );
+    const isDeveloperLiteralsModule = (module: object) =>
+      Boolean((module as DeveloperLiterals)?.ExperimentBuckets?.TREATMENT_1);
 
-    const user = await this.patcher_core.getModule<UserModule>(
-      isUserModule,
-    );
+    const user = await this.patcher_core.getModule<UserModule>(isUserModule);
     if (!user) throw new Error("User module not found");
 
-    const dev = await this.patcher_core.getModule<DeveloperMod>(
-      isDeveloperModule,
-    );
+    const dev =
+      await this.patcher_core.getModule<DeveloperMod>(isDeveloperModule);
     if (!dev) throw new Error("Developer module not found");
 
     const devConf = await this.patcher_core.getModule<DeveloperLiterals>(
@@ -76,7 +74,10 @@ export default class DiscordPatcher {
 
     const modules = await this.getDiscordModules();
     await this.patcher_core.patch("User|UpdateFlag", async () => {
-      const user = await waitEnableFor(() => modules.user.getCurrentUser(), 5000);
+      const user = await waitEnableFor(
+        () => modules.user.getCurrentUser(),
+        5000,
+      );
       /* eslint-disable no-bitwise */
       user.flags |= 4604879;
       /* eslint-enable no-bitwise */
@@ -102,18 +103,17 @@ export default class DiscordPatcher {
       }),
       this.patcher_core.patch("Reload|ExperimentStore", async (patcher) => {
         type ExperimentStore = Store & {
-          getSerializedState: () => ExperimentSerializedState
+          getSerializedState: () => ExperimentSerializedState;
         };
 
-        const store = await patcher.getStore(
-          "ExperimentStore",
-          (x: Store) => Boolean((x as ExperimentStore)?.getSerializedState),
-        ) as ExperimentStore;
+        const store = (await patcher.getStore("ExperimentStore", (x: Store) =>
+          Boolean((x as ExperimentStore)?.getSerializedState),
+        )) as ExperimentStore;
 
         const node = await patcher.getNode<{
           OVERLAY_INITIALIZE: (data: {
             serializedExperimentStore: ExperimentSerializedState;
-            user: User
+            user: User;
           }) => void;
         }>("ExperimentStore");
 
@@ -131,16 +131,19 @@ export default class DiscordPatcher {
 
         return true;
       }),
-      this.patcher_core.patch("Reload|DeveloperExperimentStore", async (patcher) => {
-        const store = await patcher.getNode<{
-          CONNECTION_OPEN: () => void;
-        }>("DeveloperExperimentStore");
-        if (!store) return false;
+      this.patcher_core.patch(
+        "Reload|DeveloperExperimentStore",
+        async (patcher) => {
+          const store = await patcher.getNode<{
+            CONNECTION_OPEN: () => void;
+          }>("DeveloperExperimentStore");
+          if (!store) return false;
 
-        store.actionHandler.CONNECTION_OPEN();
+          store.actionHandler.CONNECTION_OPEN();
 
-        return true;
-      }),
+          return true;
+        },
+      ),
 
       this.patcher_core.patch("Appearance|ShowAllItems", async (patcher) => {
         await waitEnableFor(() => patcher.req.c[800751]?.loaded, 5000);
@@ -148,20 +151,21 @@ export default class DiscordPatcher {
         type SettingUIModule = {
           default: {
             prototype: {
-              props: { sections: [] } // dummy
+              props: { sections: [] }; // dummy
               getPredicateSections: () => {
                 section?: string;
                 label?: string;
                 element?: React.FC;
               }[];
-            }
-          }
+            };
+          };
         };
 
         const SettingUI = await patcher.getModule<SettingUIModule>(
-          (x) => Boolean(
-            (x as SettingUIModule)?.default?.prototype?.getPredicateSections,
-          ),
+          (x) =>
+            Boolean(
+              (x as SettingUIModule)?.default?.prototype?.getPredicateSections,
+            ),
           { usingRawModule: true },
         );
 
@@ -169,17 +173,23 @@ export default class DiscordPatcher {
 
         const custom_components = new CustomReactComponents(patcher);
 
-        const newOption1 = { section: "Mod-Options", label: "uo-", element: custom_components.primarySettingElement.bind(custom_components) };
-        const newOption2 = { section: "All-Options", label: "All Options", element: custom_components.AllSettingsElement.bind(custom_components) };
-        SettingUI.default.prototype.getPredicateSections = function overrided() {
-          // @ts-expect-error: Export to global
-          globalThis.sections = this.props.sections;
-          return [
-            ...this.props.sections,
-            newOption1,
-            newOption2,
-          ];
+        const newOption1 = {
+          section: "Mod-Options",
+          label: "uo-",
+          element:
+            custom_components.primarySettingElement.bind(custom_components),
         };
+        const newOption2 = {
+          section: "All-Options",
+          label: "All Options",
+          element: custom_components.AllSettingsElement.bind(custom_components),
+        };
+        SettingUI.default.prototype.getPredicateSections =
+          function overrided() {
+            // @ts-expect-error: Export to global
+            globalThis.sections = this.props.sections;
+            return [...this.props.sections, newOption1, newOption2];
+          };
 
         return true;
       }),
