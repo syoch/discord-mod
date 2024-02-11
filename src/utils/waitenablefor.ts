@@ -2,7 +2,7 @@ import logger from "../logger";
 
 export default async function waitEnableFor<T>(func: () => T, timeout_ms = 5000, fail_message = "") {
   let tried = 0;
-  return await new Promise<T>((resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
     let interval: number;
 
     let timeout: number;
@@ -25,5 +25,5 @@ export default async function waitEnableFor<T>(func: () => T, timeout_ms = 5000,
         reject(fail_message);
       }, timeout_ms);
     }
-  })
+  });
 }

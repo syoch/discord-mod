@@ -1,5 +1,5 @@
 export default {
-  patchNewobject: function () {
+  patchNewobject() {
     function filterDescriptor(desc: PropertyDescriptor): PropertyDescriptor {
       if (desc.writable === false) {
         desc.writable = true;
@@ -16,8 +16,8 @@ export default {
       return desc;
     }
 
-    Object.defineProperties = (orig => (obj, props) => {
-      for (let prop in props) {
+    Object.defineProperties = ((orig) => (obj, props) => {
+      for (const prop in props) {
         props[prop] = filterDescriptor(props[prop]);
 
         const current_descriptor = Object.getOwnPropertyDescriptor(obj, prop);
@@ -29,7 +29,7 @@ export default {
       return orig(obj, props);
     })(Object.defineProperties);
 
-    Object.defineProperty = (orig => (obj, prop, desc) => {
+    Object.defineProperty = ((orig) => (obj, prop, desc) => {
       const new_desc = filterDescriptor(desc);
 
       const current_descriptor = Object.getOwnPropertyDescriptor(obj, prop);
@@ -41,40 +41,40 @@ export default {
     })(Object.defineProperty);
   },
 
-  patchFreeze: function () {
+  patchFreeze() {
     const protect = (obj: any) => obj;
     const isProtected = (_: any) => false;
 
     Object.freeze = protect;
     Object.seal = protect;
     Object.preventExtensions = protect;
-    Reflect.preventExtensions = obj => { protect(obj); return true; };
+    Reflect.preventExtensions = (obj) => { protect(obj); return true; };
     Object.isFrozen = isProtected;
     Object.isSealed = isProtected;
-    Object.isExtensible = obj => !isProtected(obj);
+    Object.isExtensible = (obj) => !isProtected(obj);
   },
 
-  patchNetwork: function () {
-    //@ts-ignore
-    unsafeWindow.XMLHttpRequest.prototype.open = (orig => function (method, url, async, user, password) {
+  patchNetwork() {
+    // @ts-ignore
+    unsafeWindow.XMLHttpRequest.prototype.open = ((orig) => function (method, url, async, user, password) {
       logger.info("Patch|XHR", `Requested ${method} ${url}`);
-      //@ts-ignore
+      // @ts-ignore
       orig.apply(this, arguments);
-      //@ts-ignore
+      // @ts-ignore
     })(unsafeWindow.XMLHttpRequest.prototype.open);
 
-    //@ts-ignore
+    // @ts-ignore
     unsafeWindow.fetch = (/** @type {()=>any} */ (orig): any => (x, opts) => {
       logger.info("Patch|Fetch", `Requested ${opts?.method} ${x}`);
 
       return orig(x, opts);
-      //@ts-ignore
+      // @ts-ignore
     })(unsafeWindow.fetch.bind(unsafeWindow));
   },
 
-  patch: function () {
+  patch() {
     this.patchNewobject();
     this.patchFreeze();
     // this.patchNetwork();
-  }
-}
+  },
+};

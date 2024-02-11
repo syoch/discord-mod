@@ -1,11 +1,11 @@
 export default {
   tag: "Discord Mod",
 
-  header: function (type: 'error' | 'info' | 'warn', category: string) {
+  header(type: "error" | "info" | "warn", category: string) {
     const tag_color = {
-      "error": "#f88",
-      "info": "#8cf",
-      "warn": "#fc8"
+      error: "#f88",
+      info: "#8cf",
+      warn: "#fc8",
     }[type];
 
     return [
@@ -13,26 +13,26 @@ export default {
       `color: ${tag_color}`,
       "",
       "color: #cfc",
-      ""
-    ]
+      "",
+    ];
   },
 
-  info: function (category: string, ...args: any[]) {
+  info(category: string, ...args: any[]) {
     console.log(
       ...this.header("info", category),
-      ...args
+      ...args,
     );
   },
-  warn: function (category: string, ...args: any[]) {
+  warn(category: string, ...args: any[]) {
     console.warn(
       ...this.header("warn", category),
-      ...args
+      ...args,
     );
   },
-  error: function (category: string, ...args: any[]) {
+  error(category: string, ...args: any[]) {
     console.error(
       ...this.header("error", category),
-      ...args
+      ...args,
     );
   },
 };
