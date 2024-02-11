@@ -1,8 +1,11 @@
 {
   "scripts": {
+    "format": "prettier --write src",
     "build": "bun build ./src/index.ts --outdir ./dist",
     "build-userscript": "bun run build; cat userscript/banner.js dist/index.js > dist/index.user.js",
-    "lint": "eslint ."
+    "lint": "eslint --fix .",
+
+    "fix": "bun run format && bun run lint"
   },
   "dependencies": { "eslint": "^8.56.0" },
   "devDependencies": {
@@ -13,7 +16,9 @@
     "@typescript-eslint/parser": "^6.21.0",
     "eslint-config-airbnb-base": "^15",
     "eslint-config-airbnb-typescript": "^17",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2",
+    "prettier": "^3.2.5",
     "prettier-eslint": "^16.3.0",
     "typescript": "^5.3.3"
   },

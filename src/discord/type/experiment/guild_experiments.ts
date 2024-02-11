@@ -4,18 +4,18 @@ export interface GuildExperiment {
   holdoutBucket: null; // it may be a string
   holdoutName: null;
   overrides: {
-    [guildId: string]: boolean
+    [guildId: string]: boolean;
   };
-  overridesFormatted: [],
+  overridesFormatted: [];
   populations: {
     buckets: {
-      bucket: number,
+      bucket: number;
       positions: {
-        start: number,
-        end: number
-      }[]
-    }[],
-    filters: [], // it may contain a filter object
-    rawFilterData: [number, [number, number][]][]
-  }[]
+        start: number;
+        end: number;
+      }[];
+    }[];
+    filters: []; // it may contain a filter object
+    rawFilterData: [number, [number, number][]][];
+  }[];
 }

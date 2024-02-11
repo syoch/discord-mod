@@ -14,19 +14,21 @@ module.exports = {
   },
   ignorePatterns: ["dist"],
   extends: [
+    "eslint:recommended",
     "airbnb-base",
     "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier",
   ],
   rules: {
     "import/prefer-default-export": "off",
     "@typescript-eslint/quotes": ["error", "double"],
   },
   settings: {
-    'import/resolver': {
-      'node': {
-        'extensions': ['.js', '.jsx', '.ts', '.tsx']
-      }
-    }
-  }
+    "import/resolver": {
+      node: {
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+      },
+    },
+  },
 };

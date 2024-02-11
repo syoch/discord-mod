@@ -1,4 +1,4 @@
-const js_patch = {
+const JSPatch = {
   patchNewobject() {
     function filterDescriptor(desc: PropertyDescriptor): PropertyDescriptor {
       const newDesc = { ...desc };
@@ -53,7 +53,10 @@ const js_patch = {
     // @ts-expect-error: This is JS Code
     Object.preventExtensions = protect;
     Object.freeze = protect;
-    Reflect.preventExtensions = (obj) => { protect(obj); return true; };
+    Reflect.preventExtensions = (obj) => {
+      protect(obj);
+      return true;
+    };
 
     Object.isFrozen = isProtected;
     Object.isSealed = isProtected;
@@ -78,9 +81,9 @@ const js_patch = {
     this.patchNewobject();
     this.patchFreeze();
     // this.patchNetwork();
-  }
+  },
 };
 
-js_patch.patch();
+JSPatch.patch();
 
-export default js_patch;
+export default JSPatch;

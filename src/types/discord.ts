@@ -1,6 +1,10 @@
 import { RequireFunction } from "../discord/type/webpack_system";
 
-type PushArguments = [number[], Record<string, never>, (req: RequireFunction) => void];
+type PushArguments = [
+  number[],
+  Record<string, never>,
+  (req: RequireFunction) => void,
+];
 type Push = (args: PushArguments) => void;
 
 declare global {
@@ -11,6 +15,6 @@ declare global {
     };
     webpackChunkdiscord_app: {
       push: Push;
-    }
+    };
   }
 }

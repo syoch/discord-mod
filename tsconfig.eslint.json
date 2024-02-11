@@ -5,6 +5,8 @@
   },
   "include": [
     "src",
+    "userscript/banner.js",
+    ".*.cjs",
     ".*.js"
   ]
 }

@@ -9,7 +9,7 @@
 // @run-at       document-start
 // ==/UserScript==
 
-import js_patch from "./js_patch";
+import JSPatch from "./js_patch";
 import DiscordPatcher from "./discord/patcher";
 import DiscordPatcherCore from "./discord/patcher_core";
 import logger from "./logger";
@@ -28,7 +28,7 @@ async function main() {
       clearInterval(notifyInterval);
     }
   }, 1);
-  js_patch.patch();
+  JSPatch.patch();
 
   const patcherCore = new DiscordPatcherCore();
   const patcher = new DiscordPatcher(patcherCore);
@@ -42,9 +42,16 @@ async function main() {
   return true;
 }
 
-window.addEventListener("load", () => {
-  main()
-    .then(() => {
-      logger.info("Global", "Loaded");
-    });
-}, false);
+window.addEventListener(
+  "load",
+  () => {
+    main()
+      .then(() => {
+        logger.info("Global", "Loaded");
+      })
+      .catch((e) => {
+        throw e;
+      });
+  },
+  false,
+);

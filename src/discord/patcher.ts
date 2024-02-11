@@ -171,18 +171,18 @@ export default class DiscordPatcher {
 
         if (!SettingUI) return false;
 
-        const custom_components = new CustomReactComponents(patcher);
+        const customComponents = new CustomReactComponents(patcher);
 
         const newOption1 = {
           section: "Mod-Options",
           label: "uo-",
           element:
-            custom_components.primarySettingElement.bind(custom_components),
+            customComponents.primarySettingElement.bind(customComponents),
         };
         const newOption2 = {
           section: "All-Options",
           label: "All Options",
-          element: custom_components.AllSettingsElement.bind(custom_components),
+          element: customComponents.AllSettingsElement.bind(customComponents),
         };
         SettingUI.default.prototype.getPredicateSections =
           function overrided() {

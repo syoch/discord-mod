@@ -30,7 +30,10 @@ type MessageModule = {
   default: (msg: Message, params: RenderingParams) => RenderedMessage;
 
   // its dummy
-  renderAutomodMessageMarkup: (msg: Message, params: RenderingParams) => RenderedMessage;
+  renderAutomodMessageMarkup: (
+    msg: Message,
+    params: RenderingParams,
+  ) => RenderedMessage;
 };
 
 export default class MessageCustomizer {
@@ -45,10 +48,11 @@ export default class MessageCustomizer {
     this.message_hooks = [];
 
     const module = this.patcher.findModule<MessageModule>(
-      (x) => Boolean(
-        (x as MessageModule)?.default
-        && (x as MessageModule)?.renderAutomodMessageMarkup,
-      ),
+      (x) =>
+        Boolean(
+          (x as MessageModule)?.default &&
+            (x as MessageModule)?.renderAutomodMessageMarkup,
+        ),
       { usingRawModule: true },
     );
 

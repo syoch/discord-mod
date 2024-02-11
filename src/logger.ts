@@ -18,21 +18,12 @@ export default {
   },
 
   info(category: string, ...args: string[]) {
-    console.log(
-      ...this.header("info", category),
-      ...args,
-    );
+    console.log(...this.header("info", category), ...args);
   },
   warn(category: string, ...args: string[]) {
-    console.warn(
-      ...this.header("warn", category),
-      ...args,
-    );
+    console.warn(...this.header("warn", category), ...args);
   },
   error(category: string, ...args: string[]) {
-    console.error(
-      ...this.header("error", category),
-      ...args,
-    );
+    console.error(...this.header("error", category), ...args);
   },
 };

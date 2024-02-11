@@ -19,7 +19,11 @@ export default class DiscordPatcherCore {
     let req: RequireFunction;
 
     unsafeWindow.webpackChunkdiscord_app.push([
-      [Math.random()], {}, (x: RequireFunction) => { req = x; },
+      [Math.random()],
+      {},
+      (x: RequireFunction) => {
+        req = x;
+      },
     ]);
 
     // @ts-expect-error: Discord depends code
@@ -31,8 +35,9 @@ export default class DiscordPatcherCore {
       /* eslint-disable */
       .map((x: object) => (x as ModuledStore).exports.default);
 
-    const primaryStore = this.stores
-      .find((x) => Object.hasOwn(x, "_dispatcher"));
+    const primaryStore = this.stores.find((x) =>
+      Object.hasOwn(x, "_dispatcher"),
+    );
     if (!primaryStore) throw new Error("Primary store not found");
     this.nodes = Object.values(
       /* eslint-disable */
@@ -41,17 +46,21 @@ export default class DiscordPatcherCore {
     );
   }
 
-  findModule<Module>(filter: (module: object) => boolean, options: {
-    cacheOnly?: boolean;
-    usingRawModule?: boolean;
-  } = {}) {
+  findModule<Module>(
+    filter: (module: object) => boolean,
+    options: {
+      cacheOnly?: boolean;
+      usingRawModule?: boolean;
+    } = {},
+  ) {
     const { cacheOnly = false, usingRawModule = false } = options;
 
     const extractModule = (x: InternalModule) => {
       if (!x) return x;
       if (!x.exports) return x;
 
-      if (!Object.hasOwn(x.exports, "default") || usingRawModule) return x.exports;
+      if (!Object.hasOwn(x.exports, "default") || usingRawModule)
+        return x.exports;
       return (x.exports as { default: object }).default;
     };
 
@@ -59,7 +68,7 @@ export default class DiscordPatcherCore {
       const mod = extractModule(m);
       if (!mod) return undefined;
 
-      return filter(mod) ? mod as Module : undefined;
+      return filter(mod) ? (mod as Module) : undefined;
     };
 
     const cached_mod = Object.values(this.req.c).find((m) => checkModule(m));
@@ -67,12 +76,18 @@ export default class DiscordPatcherCore {
 
     if (cacheOnly) {
       logger.warn("findModule#Patcher", "Cannot find loaded module in cache");
-      logger.info("findModule#Patch", `(cacheOnly, usingRawModule: ${usingRawModule})`);
+      logger.info(
+        "findModule#Patch",
+        `(cacheOnly, usingRawModule: ${usingRawModule})`,
+      );
       return null;
     }
     logger.warn("findModule#Patcher", "Cannot find loaded module in cache.");
-    logger.info("findModule#Patcher", "Trying to find module in raw module. (this may cause side effects)");
-    Object.keys(this.req.m).forEach(i => {
+    logger.info(
+      "findModule#Patcher",
+      "Trying to find module in raw module. (this may cause side effects)",
+    );
+    Object.keys(this.req.m).forEach((i) => {
       try {
         const m = checkModule(this.req(i));
         if (m) return m;
@@ -80,26 +95,37 @@ export default class DiscordPatcherCore {
         logger.warn("findModule#Patcher", `Failed to load module (id: ${i})`);
       }
     });
-    logger.warn("findModule#Patcher", `Cannot find module (usingRawModule: ${usingRawModule})`);
+    logger.warn(
+      "findModule#Patcher",
+      `Cannot find module (usingRawModule: ${usingRawModule})`,
+    );
     return null;
   }
 
-  async getModule<Module>(filter: (module: object) => boolean, options: {
-    cacheOnly?: boolean;
-    usingRawModule?: boolean;
-    waitMs?: number;
-  } = {}) {
+  async getModule<Module>(
+    filter: (module: object) => boolean,
+    options: {
+      cacheOnly?: boolean;
+      usingRawModule?: boolean;
+      waitMs?: number;
+    } = {},
+  ) {
     const { waitMs = 2000 } = options;
 
-    return waitEnableFor(() => this.findModule<Module>(filter, options), waitMs);
+    return waitEnableFor(
+      () => this.findModule<Module>(filter, options),
+      waitMs,
+    );
   }
 
   async getNode<Handlers>(
     name: string,
-    concept: (node: DiscordNode<Handlers>) => boolean = () => true
+    concept: (node: DiscordNode<Handlers>) => boolean = () => true,
   ) {
     return waitEnableFor(() => {
-      const val = this.nodes.find((x) => x?.name === name) as DiscordNode<Handlers>;
+      const val = this.nodes.find(
+        (x) => x?.name === name,
+      ) as DiscordNode<Handlers>;
       if (!val) return false;
 
       if (!concept(val)) return false;
@@ -119,7 +145,10 @@ export default class DiscordPatcherCore {
     });
   }
 
-  async patch(name: string, func: (patcher: DiscordPatcherCore) => Promise<boolean>) {
+  async patch(
+    name: string,
+    func: (patcher: DiscordPatcherCore) => Promise<boolean>,
+  ) {
     try {
       const status = await func(this);
 

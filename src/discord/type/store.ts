@@ -7,6 +7,6 @@ export type Store<StoreHandlers = Record<string, never>> = {
         nodes: DiscordNode<StoreHandlers>[];
       };
     };
-  }
+  };
   getName: () => string;
 };

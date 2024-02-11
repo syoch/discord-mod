@@ -1,11 +1,8 @@
 import React from "react";
 import DiscordPatcherCore from "./patcher_core";
 import { Store } from "./type/store";
-import logger from "../logger";
 
 export default class CustomReactComponents {
-
-
   patcher: DiscordPatcherCore;
 
   React: {
@@ -25,71 +22,71 @@ export default class CustomReactComponents {
 
   DiscordUI: {
     FormSection: React.FC<{
-      tag: React.FC,
-      title: string,
-      children: React.ReactNode
+      tag: React.FC;
+      title: string;
+      children: React.ReactNode;
     }>;
     FormTitleTags: {
-      H1: React.FC
+      H1: React.FC;
     };
     FormSwitch: React.FC<{
-      value: boolean,
-      onChange: (e: boolean) => void,
-      note: string,
-      children: React.ReactNode,
+      value: boolean;
+      onChange: (e: boolean) => void;
+      note: string;
+      children: React.ReactNode;
     }>;
     TextInput: React.FC<{
-      className?: string,
-      inputClassName?: string,
-      inputPrefix?: string,
-      disabled?: boolean,
-      size?: number,
-      editable?: boolean,
-      prefixElement?: React.ReactElement,
-      focusProps?: Record<string, string>,
-      inputRef: React.RefObject<HTMLInputElement>,
+      className?: string;
+      inputClassName?: string;
+      inputPrefix?: string;
+      disabled?: boolean;
+      size?: number;
+      editable?: boolean;
+      prefixElement?: React.ReactElement;
+      focusProps?: Record<string, string>;
+      inputRef: React.RefObject<HTMLInputElement>;
     }>;
     Switch: React.FC<{
-      onChange: (e: boolean) => void,
-      checked: boolean,
-      disabled?: boolean,
-      className?: string,
+      onChange: (e: boolean) => void;
+      checked: boolean;
+      disabled?: boolean;
+      className?: string;
     }>;
     FormItem: React.FC<{
-      children: React.ReactNode,
-      disabled?: boolean,
-      className?: string,
-      titleClassName?: string,
-      tag?: string,
-      required?: Boolean,
-      style?: Record<string, string>,
-      title: string,
-      error?: boolean,
+      children: React.ReactNode;
+      disabled?: boolean;
+      className?: string;
+      titleClassName?: string;
+      tag?: string;
+      required?: boolean;
+      style?: Record<string, string>;
+      title: string;
+      error?: boolean;
     }>;
     openModal: React.FC;
     ConfirmModal: React.FC<{
-      header: string,
-      confirmText: string,
-      cancelText: string,
-      onConfirm: () => void,
-      children: React.ReactNode,
+      header: string;
+      confirmText: string;
+      cancelText: string;
+      onConfirm: () => void;
+      children: React.ReactNode;
     }>;
     Text: React.FC<{
-      variant: string,
-      children: React.ReactNode
+      variant: string;
+      children: React.ReactNode;
     }>;
     Select: React.FC<{
-      select: string,
-      options: string[],
+      select: string;
+      options: string[];
     }>;
   };
 
   configStore: {
     [key: string]: {
-      useSetting: () => boolean,
-      getSetting: () => boolean,
-      updateSetting: (e: boolean) => void,
-    }
+      useSetting: () => boolean;
+      getSetting: () => boolean;
+      updateSetting: (e: boolean) => void;
+    };
   };
 
   constructor(patcher: DiscordPatcherCore) {
@@ -111,45 +108,50 @@ export default class CustomReactComponents {
       tag: this.DiscordUI.FormTitleTags.H1,
       title: "すごい設定",
       children: [
-        Object.keys(this.configStore).
-          map(key => {
-            const store = this.configStore[key];
-            if (!store || !store.getSetting || !store.useSetting || !store.updateSetting)
-              return jsx(this.DiscordUI.FormSwitch, {
-                value: false,
-                onChange: () => { },
-                note: "Keys: " + Object.keys(store).join(", "),
-                children: "BAD:" + key,
-              });
+        Object.keys(this.configStore).map((key) => {
+          const store = this.configStore[key];
+          if (
+            !store ||
+            !store.getSetting ||
+            !store.useSetting ||
+            !store.updateSetting
+          ) {
+            return jsx(this.DiscordUI.FormSwitch, {
+              value: false,
+              onChange: () => {},
+              note: `Keys: ${Object.keys(store).join(", ")}`,
+              children: `BAD:${key}`,
+            });
+          }
 
-            const value = store.getSetting();
-            if (typeof value === 'boolean')
-              return jsx(this.DiscordUI.FormSwitch, {
-                value: store.useSetting(),
-                onChange: store.updateSetting,
-                note: "Boolean",
-                children: key,
-              })
-            else {
-              const raw_value = store.useSetting();
-              const str_value = raw_value?.toString() ?? 'Undefined';
-              const ref = this.ReactEv.useRef<HTMLInputElement>(null);
+          const value = store.getSetting();
+          if (typeof value === "boolean") {
+            return jsx(this.DiscordUI.FormSwitch, {
+              value: store.useSetting(),
+              onChange: store.updateSetting,
+              note: "Boolean",
+              children: key,
+            });
+          }
 
-              const i = setInterval(() => {
-                if (ref.current) {
-                  ref.current.value = str_value;
-                  clearInterval(i);
-                }
-              }, 200);
+          const rawValue = store.useSetting();
+          const strValue = rawValue?.toString() ?? "Undefined";
+          const ref = this.ReactEv.useRef<HTMLInputElement>(null);
 
-              return jsx(this.DiscordUI.FormItem, {
-                title: `${key} (${typeof value})`,
-                children: jsx(this.DiscordUI.TextInput, {
-                  inputRef: ref
-                })
-              });
+          const i = setInterval(() => {
+            if (ref.current) {
+              ref.current.value = strValue;
+              clearInterval(i);
             }
-          })
+          }, 200);
+
+          return jsx(this.DiscordUI.FormItem, {
+            title: `${key} (${typeof value})`,
+            children: jsx(this.DiscordUI.TextInput, {
+              inputRef: ref,
+            }),
+          });
+        }),
       ],
     });
   }
@@ -157,7 +159,7 @@ export default class CustomReactComponents {
   primarySettingElement() {
     const { jsx } = this.React;
     const { jsxs } = this.React;
-    const { useCallback } = this.ReactEv;
+    // const { useCallback } = this.ReactEv;
     // const { useState } = this.ReactEv;
 
     // const [enableHardwareAcceleration] = useState(
