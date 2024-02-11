@@ -2,7 +2,7 @@
   "saveAndRun": {
     "commands": [
       {
-        // "cmd": "bun run build"
+        "cmd": "bun build-userscript"
       }
     ]
   },

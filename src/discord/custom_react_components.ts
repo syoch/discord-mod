@@ -1,10 +1,33 @@
 import React from "react";
 import DiscordPatcherCore from "./patcher_core";
 import { Store } from "./type/store";
+import logger from "../logger";
 
 type ModalArgs = Record<string, never>;
 
+const configStoreKeys = [
+  'UseLegacyChatInput', 'UseRichChatInput', 'ExpressionSuggestionsEnabled', 'IncludeStickersInAutocomplete',
+  'RenderSpoilers', 'UseThreadSidebar', 'QuietMode', 'EmojiPickerCollapsedSections',
+  'StickerPickerCollapsedSections', 'SoundboardPickerCollapsedSections', 'ViewImageDescriptions', 'ShowCommandSuggestions',
+  'AlwaysPreviewVideo', 'NotifyFriendsOnGoLive', 'NOTIFICATION_CENTER_ACKED_BEFORE_ID_UNSET', 'NotificationCenterAckedBeforeId',
+  'InstallShortcutDesktop', 'InstallShortcutStartMenu', 'AllowActivityPartyPrivacyFriends', 'AllowActivityPartyPrivacyVoiceChannel',
+  'MessageRequestRestrictedGuildIds', 'MessageRequestRestrictedDefault', 'NonSpamRetrainingOptIn', 'DefaultGuildsRestricted',
+  'RestrictedGuildIds', 'FriendSourceFlagsSetting', 'RtcPanelShowVoiceStates', 'ConvertEmoticons',
+  'MessageDisplayCompact', 'SoundboardSettings', 'DropsOptedOut', 'NativePhoneIntegrationEnabled',
+  'AfkTimeout', 'ViewNsfwGuilds', 'ViewNsfwCommands', 'DisableGamesTab',
+  'EnableTTSCommand', 'ExplicitContentFilter', 'DmSpamFilterV2', 'ShowCurrentGame',
+  'StatusSetting', 'StatusExpiresAtSetting', 'CustomStatusSetting', 'BroadcastAllowFriends',
+  'BroadcastAllowedGuildIds', 'BroadcastAllowedUserIds', 'BroadcastAutoBroadcast', 'ClipsAllowVoiceRecording',
+  'InlineAttachmentMedia', 'InlineEmbedMedia', 'RenderEmbeds', 'RenderReactions',
+  'TimezoneOffset', 'DeveloperMode', 'ClientThemeSettings', 'GifAutoPlay',
+  'AnimateEmoji', 'AnimateStickers', 'ActivityRestrictedGuilds', 'ActivityJoiningRestrictedGuilds',
+  'DefaultGuildsActivityRestricted', 'DisableHomeAutoNav', 'FamilyCenterEnabled', 'LegacyUsernameDisabled',
+  'ExplicitContentSettings'
+] as const;
+
 export default class CustomReactComponents {
+
+
   patcher: DiscordPatcherCore;
 
   React: {
@@ -36,6 +59,12 @@ export default class CustomReactComponents {
       note: string,
       children: React.ReactNode,
     }>;
+    FormText: React.FC<{
+      value: string,
+      onChange: (e: string) => void,
+      note: string,
+      children: React.ReactNode,
+    }>;
     openModal: React.FC;
     ConfirmModal: React.FC<{
       header: string,
@@ -48,17 +77,18 @@ export default class CustomReactComponents {
       variant: string,
       children: React.ReactNode
     }>;
+    Select: React.FC<{
+      select: string,
+      options: string[],
+    }>;
   };
 
   configStore: {
-    DeveloperMode: {
+    [key: string]: {
       useSetting: () => boolean,
-      updateSetting: (e: boolean) => void
+      getSetting: () => boolean,
+      updateSetting: (e: boolean) => void,
     }
-  };
-
-  appTestModal: {
-    default: React.FC
   };
 
   constructor(patcher: DiscordPatcherCore) {
@@ -70,7 +100,47 @@ export default class CustomReactComponents {
     this.DiscordReact = patcher.req<typeof this.DiscordReact>("446674");
     this.DiscordUI = patcher.req<typeof this.DiscordUI>("77078");
     this.configStore = patcher.req<typeof this.configStore>("845579");
-    this.appTestModal = patcher.req<typeof this.appTestModal>("271445");
+  }
+
+  AllSettingsElement() {
+    const { jsx } = this.React;
+    const { jsxs } = this.React;
+
+    return jsxs(this.DiscordUI.FormSection, {
+      tag: this.DiscordUI.FormTitleTags.H1,
+      title: "すごい設定",
+      children: [
+        Object.keys(this.configStore).map(key => {
+          const store = this.configStore[key];
+          if (!store || !store.getSetting || !store.useSetting || !store.updateSetting)
+            return jsx(this.DiscordUI.FormSwitch, {
+              value: false,
+              onChange: () => { },
+              note: "Keys: " + Object.keys(store).join(", "),
+              children: "BAD:" + key,
+            });
+          const value = store.getSetting();
+
+          if (typeof value === 'boolean')
+            return jsx(this.DiscordUI.FormSwitch, {
+              value: store.useSetting(),
+              onChange: store.updateSetting,
+              note: "Test Note",
+              children: key,
+            });
+          else {
+            const raw_value = store.useSetting();
+            const str_value = raw_value?.toString() ?? 'Undefined';
+            return jsx(this.DiscordUI.FormText, {
+              value: str_value,
+              onChange: (e: string) => { logger.info("AllSettingsElement-!b", e) },
+              note: "Linked with dummy setting",
+              children: key,
+            });
+          }
+        }).filter(Boolean),
+      ],
+    });
   }
 
   primarySettingElement() {

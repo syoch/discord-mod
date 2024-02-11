@@ -169,13 +169,15 @@ export default class DiscordPatcher {
 
         const custom_components = new CustomReactComponents(patcher);
 
-        const newOption = { section: "Mod-Options", label: "uo-", element: custom_components.primarySettingElement.bind(custom_components) };
+        const newOption1 = { section: "Mod-Options", label: "uo-", element: custom_components.primarySettingElement.bind(custom_components) };
+        const newOption2 = { section: "All-Options", label: "All Options", element: custom_components.AllSettingsElement.bind(custom_components) };
         SettingUI.default.prototype.getPredicateSections = function overrided() {
           // @ts-expect-error: Export to global
           globalThis.sections = this.props.sections;
           return [
             ...this.props.sections,
-            newOption,
+            newOption1,
+            newOption2,
           ];
         };
 
