@@ -14,7 +14,7 @@
 const logger = {
   tag: "Discord Mod",
 
-  header: function (/** @type {'error' | 'info' | 'warn'}*/ type,/** @type {string} */ category) {
+  header: function (type: 'error' | 'info' | 'warn', category: string) {
     const tag_color = {
       "error": "#f88",
       "info": "#8cf",
@@ -30,19 +30,19 @@ const logger = {
     ]
   },
 
-  info: function (/** @type {string} */ category,/** @type {any} */ ...args) {
+  info: function (category: string, ...args: any[]) {
     console.log(
       ...this.header("info", category),
       ...args
     );
   },
-  warn: function (/** @type {string} */ category,/** @type {any} */ ...args) {
+  warn: function (category: string, ...args: any[]) {
     console.warn(
       ...this.header("warn", category),
       ...args
     );
   },
-  error: function (/** @type {string} */ category,/** @type {any} */ ...args) {
+  error: function (category: string, ...args: any[]) {
     console.error(
       ...this.header("error", category),
       ...args
@@ -59,12 +59,7 @@ const logger = {
 
 const js_patch = {
   patchNewobject: function () {
-    /**
-     * filter Descriptor
-     * @param {PropertyDescriptor} desc
-     * @returns {PropertyDescriptor}
-     */
-    function filterDescriptor(desc) {
+    function filterDescriptor(desc: PropertyDescriptor): PropertyDescriptor {
       if (desc.writable === false) {
         desc.writable = true;
       }
@@ -79,10 +74,6 @@ const js_patch = {
 
       return desc;
     }
-
-
-    // @ts-ignore
-    unsafeWindow.filterDescriptor = filterDescriptor;
 
     Object.defineProperties = (orig => (obj, props) => {
       for (let prop in props) {
@@ -110,11 +101,8 @@ const js_patch = {
   },
 
   patchFreeze: function () {
-    /** @type {(_: any) => any} */
-    const protect = obj => obj;
-
-    /** @type {(_: any) => boolean} */
-    const isProtected = _ => false;
+    const protect = (obj: any) => obj;
+    const isProtected = (_: any) => false;
 
     Object.freeze = protect;
     Object.seal = protect;
@@ -135,7 +123,7 @@ const js_patch = {
     })(unsafeWindow.XMLHttpRequest.prototype.open);
 
     //@ts-ignore
-    unsafeWindow.fetch = (/** @type {()=>any} */ orig => (x, opts) => {
+    unsafeWindow.fetch = (/** @type {()=>any} */ (orig): any => (x, opts) => {
       logger.info("Patch|Fetch", `Requested ${opts?.method} ${x}`);
 
       return orig(x, opts);
@@ -158,21 +146,11 @@ js_patch.patch();
 //* |                 |
 //* +-----------------+
 
-/**
-* Sleep in milliseconds
-* @param {number} ms A millisecond of wait
-* @returns {Promise<void>}
-*/
-function sleep(ms) {
+function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-/**
-* Listup Object keys
-* @param {Object} o the Object
-* @returns {string[]}
-*/
-function object_keys(o) {
+function object_keys(o: Object) {
   try {
     return Object.keys(o);
   } catch {
@@ -180,21 +158,12 @@ function object_keys(o) {
   }
 }
 
-/**
-* @template T
-* @param {() => T} func
-* @param {number} timeout_ms
-* @param {string} fail_message
-* @return {Promise<T>}
-*/
-async function waitEnableFor(func, timeout_ms = 5000, fail_message = "") {
+async function waitEnableFor<T>(func: () => T, timeout_ms = 5000, fail_message = "") {
   let tried = 0;
-  return await new Promise((resolve, reject) => {
-    /** @type {number} */
-    let interval;
+  return await new Promise<T>((resolve, reject) => {
+    let interval: number;
 
-    /** @type {number} */
-    let timeout;
+    let timeout: number;
 
     interval = setInterval(() => {
       const val = func();
@@ -218,13 +187,10 @@ async function waitEnableFor(func, timeout_ms = 5000, fail_message = "") {
 
 }
 
-/**
-* @param {DiscordPatcher} patcher
-*/
-async function getDiscordModules(patcher) {
-  const user = await waitEnableFor(() => patcher.findModule(x => x?.getUsers), 2000);
-  const dev = await waitEnableFor(() => patcher.findModule(x => typeof x?.isDeveloper !== "undefined"), 2000);
-  const dev_conf = await waitEnableFor(() => patcher.findModule(m => m?.ExperimentBuckets), 2000);
+async function getDiscordModules(patcher: DiscordPatcher) {
+  const user = await waitEnableFor(() => patcher.findModule((x: any) => x?.getUsers), 2000);
+  const dev = await waitEnableFor(() => patcher.findModule((x: any) => typeof x?.isDeveloper !== "undefined"), 2000);
+  const dev_conf = await waitEnableFor(() => patcher.findModule((m: any) => m?.ExperimentBuckets), 2000);
   return {
     user: await user,
     dev: await dev,
@@ -232,46 +198,43 @@ async function getDiscordModules(patcher) {
   }
 }
 
-/**
-* @typedef {object} Message
-* @property {string} content
-* @property {string} colorString
-*
-* @typedef {object} MessageRenderingParameters
-* @property {boolean} allowHeading
-* @property {boolean} allowLinks
-* @property {boolean} allowList
-* @property {boolean} formatInline
-* @property {boolean} hideSimpleEmbedContent
-* @property {boolean} isInteracting
-* @property {boolean} noStyleAndInteraction
-* @property {boolean} previewLinkTarget
-*
-* @typedef {object} MessageRenderingArguments
-* @property {Message} message
-* @property {MessageRenderingParameters} params
-* @typedef {(args: MessageRenderingArguments) => MessageRenderingArguments} MessageRenderingBeforeHook
-* @typedef {MessageRenderingBeforeHook[]} MessageHooks
-*/
+interface Message {
+  content: string;
+  colorString: string;
+};
+
+interface MessageRenderingParameters {
+  allowHeading: boolean;
+  allowLinks: boolean;
+  allowList: boolean;
+  formatInline: boolean;
+  hideSimpleEmbedContent: boolean;
+  isInteracting: boolean;
+  noStyleAndInteraction: boolean;
+  previewLinkTarget: boolean;
+};
+
+interface MessageRenderingArguments {
+  message: Message;
+  params: MessageRenderingParameters;
+};
+
 
 class MessageCustomizer {
+  patcher: DiscordPatcher;
+  message_hooks: ((args: MessageRenderingArguments) => MessageRenderingArguments)[];
+  message_module: any;
 
-
-  /**
-   * @param {DiscordPatcher} patcher
-   */
-  constructor(patcher) {
+  constructor(patcher: DiscordPatcher) {
     this.patcher = patcher;
-
-    /** @type {MessageHooks} */
     this.message_hooks = [];
 
     this.message_module = this.patcher.findModule(x => x?.default && x?.renderAutomodMessageMarkup, { usingRawModule: true });
 
     ((original) => {
       Object.defineProperty(this.message_module, "default", {
-        value: (msg, params) => {
-          let opts = { message: msg, params: params };
+        value: (msg: Message, params: MessageRenderingParameters) => {
+          let opts = { message: msg, params: params } as MessageRenderingArguments;
           for (let hook of this.message_hooks) {
             let hooked = hook(opts);
             if (hooked?.message && hooked?.params) {
@@ -288,8 +251,8 @@ class MessageCustomizer {
     })(this.message_module.default);
   }
 
-  /** @param {MessageRenderingBeforeHook} hook */
-  addMessageHook(hook) {
+
+  addMessageHook(hook: (args: MessageRenderingArguments) => MessageRenderingArguments) {
     this.message_hooks.push(hook);
   }
 }
@@ -297,8 +260,28 @@ class MessageCustomizer {
 
 
 class CustomReactComponents {
+  patcher: DiscordPatcher;
+  React: any;
+  ReactEv: any;
+  DiscordReact: any;
+  i: any;
+  DiscordUI: any;
+  testMode: any;
+  libraryApplicationStore: any;
+  testModeStore: any;
+  c: any;
+  S: any;
+  discordURLs: any;
+  platform: any;
+  HWAccel: any;
+  configStore: any;
+  appTestModal: any;
+  g: any;
+  L10N: any;
+  icons: any;
 
-  constructor(/** @type {DiscordPatcher} */ patcher) {
+
+  constructor(patcher: DiscordPatcher) {
     this.patcher = patcher;
 
     patcher.req("222007");
@@ -352,8 +335,8 @@ class CustomReactComponents {
         }),
         jsx(this.DiscordUI.FormSwitch, {
           value: enableHardwareAcceleration,
-          onChange: useCallback(e => {
-            this.DiscordUI.openModal(t => jsx(this.DiscordUI.ConfirmModal, {
+          onChange: useCallback((e: boolean) => {
+            this.DiscordUI.openModal((t: any) => jsx(this.DiscordUI.ConfirmModal, {
               header: "モーダルのタイトル",
               confirmText: "OK",
               cancelText: "キャンセル",
@@ -370,11 +353,11 @@ class CustomReactComponents {
         }),
         jsx(this.DiscordUI.FormSwitch, {
           value: null != testModeApplicationId,
-          onChange: useCallback(e => {
+          onChange: useCallback((e: boolean) => {
             if (!e) {
               this.testMode.reset()
             }
-            this.DiscordUI.openModal(e => jsx(this.appTestModal.default, {
+            this.DiscordUI.openModal((e: any) => jsx(this.appTestModal.default, {
               ...e
             }));
           }, []),
@@ -384,7 +367,7 @@ class CustomReactComponents {
         this.icons.badgedItem && jsx(this.DiscordUI.FormSwitch, {
           value: !homeAutoNav,
           note: "Test Note",
-          onChange: useCallback(e => {
+          onChange: useCallback((e: any) => {
             this.configStore.DisableHomeAutoNav.updateSetting(!e)
           }, []),
           children: jsxs("div", {
@@ -403,18 +386,23 @@ class CustomReactComponents {
 
 }
 
-/**
-* @typedef {object} ReactNode
-* @typedef {object} Store
-* @typedef {{id: number, loaded: boolean, exports: object}} InternalModule
-*/
+type ReactNode = any;
+
+type Store = {
+  getName: () => string;
+  getSerializedState: () => object;
+} & any;
+
+type InternalModule = { id: number; loaded: boolean; exports: object; };
 
 class DiscordPatcher {
+  req: Function & { c: { [n: number]: InternalModule; }; m: { [n: number]: InternalModule; }; };
+  stores: Store[];
+  nodes: ReactNode[];
+  message_customizer: MessageCustomizer;
 
-  /** @constructor */
   constructor() {
-    /** @type {Function & {c: Object.<number, InternalModule>, m: Object.<number, InternalModule>}} */
-    let req;
+    let req: Function & { c: { [n: number]: InternalModule; }; m: { [n: number]: InternalModule; }; };
 
     // @ts-ignore
     webpackChunkdiscord_app.push([[Math.random()], {}, x => req = x]);
@@ -423,24 +411,18 @@ class DiscordPatcher {
     this.req = req;
 
     this.stores = Object.values(this.req.c).
-      filter(x => x?.exports?.default?._dispatcher).
-      map(x => x.exports.default);
+      filter((x: any) => x?.exports?.default?._dispatcher).
+      map((x: any) => x.exports.default);
 
-    /** @type {ReactNode[]} */
-    this.nodes = Object.values(this.stores.find(x => x && x._dispatcher)._dispatcher._actionHandlers._dependencyGraph.nodes);
+    this.nodes = Object.values(this.stores.find(x => x?._dispatcher)._dispatcher._actionHandlers._dependencyGraph.nodes);
 
     this.message_customizer = new MessageCustomizer(this);
   }
 
-  /**
-   * @param {(module: object) => boolean} filter
-   * @param {{cacheOnly?: boolean, usingRawModule?: boolean}} options
-   * @returns {object | undefined}
-   */
-  findModule(filter, options = {}) {
+  findModule(filter: (module: any) => boolean, options: { cacheOnly?: boolean; usingRawModule?: boolean; } = {}): any | null {
     const { cacheOnly = false, usingRawModule = false } = options;
 
-    const extractModule = (/** @type {any} */ x) => {
+    const extractModule = (/** @type {any} */ x: any) => {
       if (!x) return x;
       if (!x.exports) return x;
 
@@ -448,7 +430,7 @@ class DiscordPatcher {
       return x.exports.default;
     }
 
-    const checkModule = (/** @type {any} */ m) => {
+    const checkModule = (/** @type {any} */ m: any) => {
       m = extractModule(m);
       if (!m) return undefined;
 
@@ -478,14 +460,9 @@ class DiscordPatcher {
     return null;
   }
 
-  /**
-   * @param {string} name Node name
-   * @param {(node: ReactNode) => any} concept concept function
-   * @returns {Promise<ReactNode>}
-   */
-  async getNode(name, concept = () => true) {
+  async getNode(name: string, concept: (node: ReactNode) => any = () => true) {
     return await waitEnableFor(() => {
-      const val = this.nodes.find(x => x.name === name);
+      const val = this.nodes.find(x => x?.name === name);
       if (!val) return false;
 
       if (!concept(val)) return false;
@@ -494,12 +471,7 @@ class DiscordPatcher {
     });
   }
 
-  /**
-   * @param {string} name store name
-   * @param {(node: Store) => any} concept concept function
-   * @returns {Promise<Store>}
-   */
-  async getStore(name, concept = () => true) {
+  async getStore(name: string, concept: (node: Store) => any = () => true) {
     return await waitEnableFor(() => {
       const val = this.stores.find(x => x.getName() === name);
       if (!val) return false;
@@ -514,7 +486,7 @@ class DiscordPatcher {
    * @param {string} name Patch name
    * @param {(modules: DiscordPatcher) => Promise<boolean | void> | boolean | void} func a function to execute
    */
-  async patch(name, func) {
+  async patch(name: string, func: (modules: DiscordPatcher) => Promise<boolean | void> | boolean | void) {
     try {
       const status = await func(this);
 
@@ -567,6 +539,7 @@ class DiscordPatcher {
       this.patch("Appearance|ShowAllItems", async (patcher) => {
         await waitEnableFor(() => patcher.req.c[800751]?.loaded, 5000);
         patcher.req("800751").default.prototype.getPredicateSections = function () {
+          //@ts-ignore
           globalThis.sections = this.props.sections;
           return [
             ...this.props.sections,

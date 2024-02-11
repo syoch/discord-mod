@@ -1,0 +1,21 @@
+{
+  "include": [
+    "src/**/*.ts"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "checkJs": false,
+    "declaration": true,
+    "target": "ES5",
+    "module": "amd",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  }
+}
