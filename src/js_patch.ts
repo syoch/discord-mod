@@ -1,3 +1,5 @@
+import logger from "./logger";
+
 export default {
   patchNewobject() {
     function filterDescriptor(desc: PropertyDescriptor): PropertyDescriptor {
