@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "bun build ./src/index.tsx --outdir ./dist"
+  },
   "dependencies": {},
   "devDependencies": {
     "typescript": "^5.3.3"
