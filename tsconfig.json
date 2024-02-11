@@ -1,7 +1,10 @@
 {
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
+    "src",
+    "userscript",
+    ".*.js",
+    ".*.cjs",
+    "build.ts"
   ],
   "compilerOptions": {
     "strict": true,

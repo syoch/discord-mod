@@ -1,7 +1,7 @@
 {
   "scripts": {
     "format": "prettier --write src",
-    "build": "bun build ./src/index.ts --outdir ./dist",
+    "build": "bun build.ts",
     "build-userscript": "bun run build; cat userscript/banner.js dist/index.js > dist/index.user.js",
     "lint": "eslint --fix .",
 
