@@ -1,11 +1,13 @@
 {
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist",
+    "build-userscript": "bun run build; cat userscript/banner.js dist/index.js > dist/index.user.js",
     "lint": "eslint ."
   },
   "dependencies": { "eslint": "^8.56.0" },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/react": "^18.2.55",
     "@types/tampermonkey": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",

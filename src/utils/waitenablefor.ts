@@ -3,14 +3,12 @@ import logger from "../logger";
 export default async function waitEnableFor<T>(func: () => T, timeout_ms = 5000, fail_message = "") {
   let tried = 0;
   return new Promise<T>((resolve, reject) => {
-    let interval: number;
+    let timeout: Timer;
 
-    let timeout: number;
-
-    interval = setInterval(() => {
+    const interval = setInterval(() => {
       const val = func();
       if (!val) {
-        tried++;
+        tried += 1;
         return;
       }
       clearInterval(interval);

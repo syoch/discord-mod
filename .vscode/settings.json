@@ -2,7 +2,7 @@
   "saveAndRun": {
     "commands": [
       {
-        "cmd": "bun run lint && bun run build"
+        // "cmd": "bun run build"
       }
     ]
   },

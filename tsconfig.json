@@ -13,6 +13,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
     "lib": [
       "es2017",
       "dom"

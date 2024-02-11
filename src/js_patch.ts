@@ -1,82 +1,82 @@
-import logger from "./logger";
-
-export default {
-  patchNewobject() {
+export default class JSPatch {
+  static patchNewobject() {
     function filterDescriptor(desc: PropertyDescriptor): PropertyDescriptor {
-      if (desc.writable === false) {
-        desc.writable = true;
+      const newDesc = { ...desc };
+      if (newDesc.writable === false) {
+        newDesc.writable = true;
       }
 
-      if (desc.configurable === false) {
-        desc.configurable = true;
+      if (newDesc.configurable === false) {
+        newDesc.configurable = true;
       }
 
-      if (desc.enumerable === false) {
-        desc.enumerable = true;
+      if (newDesc.enumerable === false) {
+        newDesc.enumerable = true;
       }
 
-      return desc;
+      return newDesc;
     }
 
     Object.defineProperties = ((orig) => (obj, props) => {
-      for (const prop in props) {
-        props[prop] = filterDescriptor(props[prop]);
+      const newProps = { ...props };
 
-        const current_descriptor = Object.getOwnPropertyDescriptor(obj, prop);
-        if (!current_descriptor) {
-          props[prop].configurable = true;
+      Object.keys(props).forEach((prop) => {
+        newProps[prop] = filterDescriptor(props[prop]);
+
+        const currentCescriptor = Object.getOwnPropertyDescriptor(obj, prop);
+        if (!currentCescriptor) {
+          newProps[prop].configurable = true;
         }
-      }
+      });
 
       return orig(obj, props);
     })(Object.defineProperties);
 
     Object.defineProperty = ((orig) => (obj, prop, desc) => {
-      const new_desc = filterDescriptor(desc);
+      const newDesc = filterDescriptor(desc);
 
-      const current_descriptor = Object.getOwnPropertyDescriptor(obj, prop);
-      if (!current_descriptor) {
-        new_desc.configurable = true;
+      const currentDescriptor = Object.getOwnPropertyDescriptor(obj, prop);
+      if (!currentDescriptor) {
+        newDesc.configurable = true;
       }
 
       return orig(obj, prop, desc);
     })(Object.defineProperty);
-  },
+  }
 
-  patchFreeze() {
-    const protect = (obj: any) => obj;
-    const isProtected = (_: any) => false;
+  static patchFreeze() {
+    const protect = (obj: object) => obj;
+    const isProtected = () => false;
 
-    Object.freeze = protect;
+    // @ts-expect-error: This is JS Code
     Object.seal = protect;
+    // @ts-expect-error: This is JS Code
     Object.preventExtensions = protect;
+    Object.freeze = protect;
     Reflect.preventExtensions = (obj) => { protect(obj); return true; };
+
     Object.isFrozen = isProtected;
     Object.isSealed = isProtected;
+    // @ts-expect-error: This is JS Code
     Object.isExtensible = (obj) => !isProtected(obj);
-  },
-
-  patchNetwork() {
-    // @ts-ignore
-    unsafeWindow.XMLHttpRequest.prototype.open = ((orig) => function (method, url, async, user, password) {
-      logger.info("Patch|XHR", `Requested ${method} ${url}`);
-      // @ts-ignore
-      orig.apply(this, arguments);
-      // @ts-ignore
+  }
+  /* patchNetwork() {
+    unsafeWindow.XMLHttpRequest.prototype.open = ((orig) => function (method, url) {
+      logger.info("Patch|XHR", `Requested ${method} ${url.toString()}`);
+      //  @ts-expect-error: This is JS Code
+      return orig.apply(this, arguments);
     })(unsafeWindow.XMLHttpRequest.prototype.open);
 
-    // @ts-ignore
-    unsafeWindow.fetch = (/** @type {()=>any} */ (orig): any => (x, opts) => {
-      logger.info("Patch|Fetch", `Requested ${opts?.method} ${x}`);
+    unsafeWindow.fetch = ((orig) => (x, opts) => {
+      logger.info("Patch|Fetch", `Requested ${opts?.method} ${x.toString()}`);
 
       return orig(x, opts);
-      // @ts-ignore
     })(unsafeWindow.fetch.bind(unsafeWindow));
-  },
+  }, */
 
-  patch() {
-    this.patchNewobject();
-    this.patchFreeze();
+  static patch() {
+    JSPatch.patchNewobject();
+    JSPatch.patchFreeze();
     // this.patchNetwork();
-  },
-};
+  }
+}
