@@ -1,9 +1,25 @@
 module.exports = {
-  ignorePatterns: [
-    'dist/**/*.js'
-  ],
-  extends: [],
+  root: true,
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
+  env: {
+    browser: true,
+    es2021: true,
+  },
   parserOptions: {
-    project: './tsconfig.json'
-  }
-}
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: "./tsconfig.eslint.json",
+    tsconfigRootDir: __dirname,
+  },
+  ignorePatterns: ["dist"],
+  extends: [
+    "airbnb-base",
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+  ],
+  rules: {
+    "import/prefer-default-export": "off",
+    "@typescript-eslint/quotes": ["error", "double"],
+  },
+};

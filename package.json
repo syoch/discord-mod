@@ -1,11 +1,17 @@
 {
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist"
+    "build": "bun build ./src/index.ts --outdir ./dist",
+    "lint": "eslint ."
   },
   "dependencies": { "eslint": "^8.56.0" },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint-config-airbnb-base": "^15",
+    "eslint-config-airbnb-typescript": "^17",
+    "eslint-plugin-import": "^2",
+    "typescript": "^5.3.3"
   },
   "name": "discord-mod",
   "module": "index.ts",

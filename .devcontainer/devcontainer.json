@@ -12,7 +12,8 @@
         "dbaeumer.vscode-eslint",
         "oven.bun-vscode",
         "esbenp.prettier-vscode",
-        "wk-j.save-and-run"
+        "wk-j.save-and-run",
+        "rvest.vs-code-prettier-eslint"
       ]
     }
   }

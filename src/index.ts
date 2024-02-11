@@ -15,6 +15,8 @@ import waitEnableFor from "./utils/waitenablefor";
 
 js_patch.patch();
 
+let a_b = 0;
+
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
