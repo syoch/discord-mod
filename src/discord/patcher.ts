@@ -5,6 +5,7 @@ import DiscordPatcherCore from "./patcher_core";
 import { ExperimentSerializedState } from "./type/experiment/serialized_state";
 import { Store } from "./type/store";
 import { User } from "./type/user";
+import CustomReactComponents from "./custom_react_components";
 
 export default class DiscordPatcher {
   patcher_core: DiscordPatcherCore;
@@ -106,11 +107,11 @@ export default class DiscordPatcher {
 
         const store = await patcher.getStore(
           "ExperimentStore",
-          (x) => Object.hasOwn(x, "getSerializedState"),
+          (x: Store) => Boolean((x as ExperimentStore)?.getSerializedState),
         ) as ExperimentStore;
 
         const node = await patcher.getNode<{
-          OVERLAY_INITIALIZE:(data: {
+          OVERLAY_INITIALIZE: (data: {
             serializedExperimentStore: ExperimentSerializedState;
             user: User
           }) => void;
@@ -132,7 +133,7 @@ export default class DiscordPatcher {
       }),
       this.patcher_core.patch("Reload|DeveloperExperimentStore", async (patcher) => {
         const store = await patcher.getNode<{
-          CONNECTION_OPEN:() => void;
+          CONNECTION_OPEN: () => void;
         }>("DeveloperExperimentStore");
         if (!store) return false;
 
@@ -166,12 +167,15 @@ export default class DiscordPatcher {
 
         if (!SettingUI) return false;
 
+        const custom_components = new CustomReactComponents(patcher);
+
+        const newOption = { section: "Mod-Options", label: "uo-", element: custom_components.primarySettingElement.bind(custom_components) };
         SettingUI.default.prototype.getPredicateSections = function overrided() {
           // @ts-expect-error: Export to global
           globalThis.sections = this.props.sections;
           return [
             ...this.props.sections,
-            { section: "My Account", label: "hehe" },
+            newOption,
           ];
         };
 

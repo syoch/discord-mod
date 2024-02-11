@@ -9,14 +9,12 @@
 // @run-at       document-start
 // ==/UserScript==
 
+import js_patch from "./js_patch";
 import DiscordPatcher from "./discord/patcher";
 import DiscordPatcherCore from "./discord/patcher_core";
-import JSPatch from "./js_patch";
 import logger from "./logger";
 import "./types/discord";
 import "./types/patch";
-
-JSPatch.patch();
 
 async function main() {
   const notifyInterval = setInterval(() => {
@@ -30,11 +28,11 @@ async function main() {
       clearInterval(notifyInterval);
     }
   }, 1);
+  js_patch.patch();
 
   const patcherCore = new DiscordPatcherCore();
   const patcher = new DiscordPatcher(patcherCore);
 
-  unsafeWindow.JSPatch = JSPatch;
   unsafeWindow.patcherCore = patcherCore;
   unsafeWindow.patcher = patcher;
 
@@ -48,8 +46,5 @@ window.addEventListener("load", () => {
   main()
     .then(() => {
       logger.info("Global", "Loaded");
-    })
-    .catch((e) => {
-      logger.error("Global", JSON.stringify(e));
     });
 }, false);

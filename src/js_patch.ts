@@ -1,5 +1,5 @@
-export default class JSPatch {
-  static patchNewobject() {
+const js_patch = {
+  patchNewobject() {
     function filterDescriptor(desc: PropertyDescriptor): PropertyDescriptor {
       const newDesc = { ...desc };
       if (newDesc.writable === false) {
@@ -29,7 +29,7 @@ export default class JSPatch {
         }
       });
 
-      return orig(obj, props);
+      return orig(obj, newProps);
     })(Object.defineProperties);
 
     Object.defineProperty = ((orig) => (obj, prop, desc) => {
@@ -40,11 +40,11 @@ export default class JSPatch {
         newDesc.configurable = true;
       }
 
-      return orig(obj, prop, desc);
+      return orig(obj, prop, newDesc);
     })(Object.defineProperty);
-  }
+  },
 
-  static patchFreeze() {
+  patchFreeze() {
     const protect = (obj: object) => obj;
     const isProtected = () => false;
 
@@ -59,7 +59,7 @@ export default class JSPatch {
     Object.isSealed = isProtected;
     // @ts-expect-error: This is JS Code
     Object.isExtensible = (obj) => !isProtected(obj);
-  }
+  },
   /* patchNetwork() {
     unsafeWindow.XMLHttpRequest.prototype.open = ((orig) => function (method, url) {
       logger.info("Patch|XHR", `Requested ${method} ${url.toString()}`);
@@ -74,9 +74,13 @@ export default class JSPatch {
     })(unsafeWindow.fetch.bind(unsafeWindow));
   }, */
 
-  static patch() {
-    JSPatch.patchNewobject();
-    JSPatch.patchFreeze();
+  patch() {
+    this.patchNewobject();
+    this.patchFreeze();
     // this.patchNetwork();
   }
-}
+};
+
+js_patch.patch();
+
+export default js_patch;

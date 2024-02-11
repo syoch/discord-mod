@@ -1,6 +1,6 @@
 import React from "react";
-import DiscordPatcherCore from "./discord/patcher_core";
-import { Store } from "./discord/type/store";
+import DiscordPatcherCore from "./patcher_core";
+import { Store } from "./type/store";
 
 type ModalArgs = Record<string, never>;
 
@@ -92,38 +92,7 @@ export default class CustomReactComponents {
           value: developerMode,
           onChange: this.configStore.DeveloperMode.updateSetting,
           note: "Test Note",
-          children: "開発者モード",
-        }),
-        jsx(this.DiscordUI.FormSwitch, {
-          value: false,
-          onChange: useCallback((e: boolean) => {
-            this.DiscordUI.openModal((t: ModalArgs) => jsx(this.DiscordUI.ConfirmModal, {
-              header: `モーダルのタイトル ${e}`,
-              confirmText: "OK",
-              cancelText: "キャンセル",
-              onConfirm: () => { },
-              ...t,
-              children: jsx(this.DiscordUI.Text, {
-                variant: "text-sm/normal",
-                children: "モーダルの本文",
-              }),
-            }));
-          }, []),
-          note: "Test Note",
-          children: "ハードウェア アクセラレーション",
-        }),
-        jsx(this.DiscordUI.FormSwitch, {
-          value: false,
-          onChange: useCallback((sw: boolean) => {
-            console.log(sw);
-            this.DiscordUI.openModal(
-              (e: ModalArgs) => jsx(this.appTestModal.default, {
-                ...e,
-              }),
-            );
-          }, []),
-          note: "Test Note",
-          children: "アプリテストモード",
+          children: "タイトル",
         }),
       ],
     });
