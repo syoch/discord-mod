@@ -18,9 +18,16 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "jsxImportSource": "wrapped-react",
+    "paths": {
+      "wrapped-react/*": [
+        "./src/wrapped-react/*"
+      ]
+    },
     "lib": [
       "es2017",
       "dom"
     ]
-  }
+  },
 }
