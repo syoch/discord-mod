@@ -9,6 +9,9 @@
 // @run-at       document-start
 // ==/UserScript==
 
+/// <reference path="../node_modules/@types/tampermonkey/index.d.ts" />
+
+
 import js_patch from "./js_patch";
 import logger from "./logger";
 import waitEnableFor from "./utils/waitenablefor";

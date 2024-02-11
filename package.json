@@ -6,11 +6,13 @@
   "dependencies": { "eslint": "^8.56.0" },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/tampermonkey": "^5.0.2",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint-config-airbnb-base": "^15",
     "eslint-config-airbnb-typescript": "^17",
     "eslint-plugin-import": "^2",
+    "prettier-eslint": "^16.3.0",
     "typescript": "^5.3.3"
   },
   "name": "discord-mod",
