@@ -1,45 +1,42 @@
-import React from "react";
 import {
   JSXRuntimeModule,
   initJSXRuntimeModule
 } from "wrapped-react/jsx-runtime";
+
+import { ReactModule, initReactModule, useRef } from "wrapped-react/react";
 import DiscordPatcherCore from "./patcher_core";
-import { Store } from "./ecosystem/store";
+
 import DiscordUI, {
   DiscordUIModule,
   initDiscordUIModule
 } from "./modules/discord_ui";
+
 import ConfigStore, {
   DiscordConfigStoreModule,
   initDiscordConfigStore,
   DiscordConfig
 } from "./modules/config_store";
+import {
+  EcosystemModule,
+  initDiscordEcosystemModule
+} from "./modules/ecosystem";
 
 export default class CustomReactComponents {
   patcher: DiscordPatcherCore;
-
-  ReactEv: {
-    useCallback: typeof React.useCallback;
-    useState: typeof React.useState;
-    useRef: typeof React.useRef;
-  };
-
-  DiscordReact: {
-    useStateFromStoresObject: <T>(store: Store[], cb: () => T) => T;
-  };
 
   constructor(patcher: DiscordPatcherCore) {
     this.patcher = patcher;
 
     patcher.req("222007");
-    this.ReactEv = patcher.req<typeof this.ReactEv>("884691");
-    this.DiscordReact = patcher.req<typeof this.DiscordReact>("446674");
+    initDiscordEcosystemModule(patcher.req<EcosystemModule>("446674"));
+    initReactModule(patcher.req<ReactModule>("884691"));
     initDiscordConfigStore(patcher.req<DiscordConfigStoreModule>("845579"));
     initDiscordUIModule(patcher.req<DiscordUIModule>("77078"));
     initJSXRuntimeModule(patcher.req<JSXRuntimeModule>("37983"));
   }
 
   AllSettingsElement() {
+    if (0) this.patcher.req("0");
     const settings = Object.keys(ConfigStore).map((key) => {
       const store = ConfigStore[key];
       if (
@@ -73,7 +70,8 @@ export default class CustomReactComponents {
 
       const rawValue = store.useSetting();
       const strValue = rawValue?.toString() ?? "Undefined";
-      const ref = this.ReactEv.useRef<HTMLInputElement>(null);
+      const ref =
+        useRef<HTMLInputElement>() as React.RefObject<HTMLInputElement>;
 
       const i = setInterval(() => {
         if (ref.current) {
