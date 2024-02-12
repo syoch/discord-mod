@@ -5,11 +5,12 @@ export type DiscordConfig<T> = {
 };
 
 export type DiscordConfigStoreModule = {
-  [key: string]: DiscordConfig<boolean>
-  | DiscordConfig<string>
-  | DiscordConfig<object>
-  | DiscordConfig<undefined>
-  | DiscordConfig<number>
+  [key: string]:
+    | DiscordConfig<boolean>
+    | DiscordConfig<string>
+    | DiscordConfig<object>
+    | DiscordConfig<undefined>
+    | DiscordConfig<number>;
 };
 
 const ConfigStore = {} as DiscordConfigStoreModule;

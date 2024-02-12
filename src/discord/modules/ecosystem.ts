@@ -4,10 +4,10 @@ import { Store } from "../ecosystem/store";
 export type EcosystemModule = {
   // BatchedStoreListener
   // default: ...
-  Dispatcher: new () => Dispatcher,
+  Dispatcher: new () => Dispatcher;
   // statesWillNeverBeEqual: ...
-  Store: new () => Store,
-  useStateFromStores: <T>(store: Store[], cb: () => T) => T
+  Store: new () => Store;
+  useStateFromStores: <T>(store: Store[], cb: () => T) => T;
   // useStateFromStoresArray: ...
   // useStateFromStoresObject: ...
 };

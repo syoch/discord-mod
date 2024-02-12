@@ -14,4 +14,4 @@ export type Dispatcher = {
   // functionCache: {...};
   // _defaultBand: number;
   actionLogger: ActionLogger;
-}
+};

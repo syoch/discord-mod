@@ -8,7 +8,8 @@ export type JSXRuntimeModule = {
 const JSXRuntime: JSXRuntimeModule = {} as JSXRuntimeModule;
 
 export const jsx = (type: FC, props: Attributes) => JSXRuntime.jsx(type, props);
-export const jsxs = (type: FC, props: Attributes) => JSXRuntime.jsxs(type, props);
+export const jsxs = (type: FC, props: Attributes) =>
+  JSXRuntime.jsxs(type, props);
 
 export function initJSXRuntimeModule(module: JSXRuntimeModule) {
   Object.assign(JSXRuntime, module);

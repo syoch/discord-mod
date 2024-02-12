@@ -123,9 +123,7 @@ export default class DiscordPatcherCore {
     concept: (node: Node<Handlers>) => boolean = () => true,
   ) {
     return waitEnableFor(() => {
-      const val = this.nodes.find(
-        (x) => x?.name === name,
-      ) as Node<Handlers>;
+      const val = this.nodes.find((x) => x?.name === name) as Node<Handlers>;
       if (!val) return undefined;
 
       if (!concept(val)) return undefined;
@@ -134,7 +132,10 @@ export default class DiscordPatcherCore {
     });
   }
 
-  async getStore<S extends Store>(name: string, concept: (node: S) => boolean = () => true) {
+  async getStore<S extends Store>(
+    name: string,
+    concept: (node: S) => boolean = () => true,
+  ) {
     return waitEnableFor(() => {
       const val = this.stores.find((x) => x.getName() === name) as S;
       if (!val) return undefined;

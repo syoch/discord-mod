@@ -22,6 +22,5 @@ export const useState = <T>(
   ...args: Parameters<typeof WrappedReact.useState<T>>
 ) => WrappedReact.useState<T>(...args);
 
-export const useRef = <T>(
-  ...args: Parameters<typeof WrappedReact.useRef<T>>
-) => WrappedReact.useRef<T>(...args);
+export const useRef = <T>(...args: Parameters<typeof WrappedReact.useRef<T>>) =>
+  WrappedReact.useRef<T>(...args);

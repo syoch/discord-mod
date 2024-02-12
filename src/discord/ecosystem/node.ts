@@ -1,6 +1,6 @@
 export type Node<Handlers> = {
-  name: string,
-  band: number,
-  actionHandler: Handlers
+  name: string;
+  band: number;
+  actionHandler: Handlers;
   // storeDidChange
 };

@@ -26,7 +26,7 @@ export default class DiscordPatcher {
     const isUserModule = (module: object) =>
       Boolean(
         (module as UserModule)?.getUsers &&
-        (module as UserModule)?.getCurrentUser,
+          (module as UserModule)?.getCurrentUser,
       );
 
     type DeveloperMod = {
@@ -113,8 +113,9 @@ export default class DiscordPatcher {
           }) => void;
         };
 
-        const store = await patcher.getStore<ExperimentStore>("ExperimentStore", (x) =>
-          Boolean(x?.getSerializedState),
+        const store = await patcher.getStore<ExperimentStore>(
+          "ExperimentStore",
+          (x) => Boolean(x?.getSerializedState),
         );
 
         const node = await patcher.getNode<NodeHandlers>("ExperimentStore");
@@ -140,7 +141,9 @@ export default class DiscordPatcher {
             CONNECTION_OPEN: () => void;
           };
 
-          const store = await patcher.getNode<NodeHandlers>("DeveloperExperimentStore");
+          const store = await patcher.getNode<NodeHandlers>(
+            "DeveloperExperimentStore",
+          );
           if (!store) return false;
 
           store.actionHandler.CONNECTION_OPEN();

@@ -1,6 +1,6 @@
 import {
   JSXRuntimeModule,
-  initJSXRuntimeModule
+  initJSXRuntimeModule,
 } from "wrapped-react/jsx-runtime";
 
 import { ReactModule, initReactModule, useRef } from "wrapped-react/react";
@@ -8,17 +8,17 @@ import DiscordPatcherCore from "./patcher_core";
 
 import DiscordUI, {
   DiscordUIModule,
-  initDiscordUIModule
+  initDiscordUIModule,
 } from "./modules/discord_ui";
 
 import ConfigStore, {
   DiscordConfigStoreModule,
   initDiscordConfigStore,
-  DiscordConfig
+  DiscordConfig,
 } from "./modules/config_store";
 import {
   EcosystemModule,
-  initDiscordEcosystemModule
+  initDiscordEcosystemModule,
 } from "./modules/ecosystem";
 
 export default class CustomReactComponents {
