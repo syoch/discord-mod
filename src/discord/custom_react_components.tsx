@@ -8,7 +8,12 @@ import { Store } from "./ecosystem/store";
 import DiscordUI, {
   DiscordUIModule,
   initDiscordUIModule
-} from "./components/discord_ui";
+} from "./modules/discord_ui";
+import ConfigStore, {
+  DiscordConfigStoreModule,
+  initDiscordConfigStore,
+  DiscordConfig
+} from "./modules/config_store";
 
 export default class CustomReactComponents {
   patcher: DiscordPatcherCore;
@@ -23,28 +28,20 @@ export default class CustomReactComponents {
     useStateFromStoresObject: <T>(store: Store[], cb: () => T) => T;
   };
 
-  configStore: {
-    [key: string]: {
-      useSetting: () => boolean;
-      getSetting: () => boolean;
-      updateSetting: (e: boolean) => void;
-    };
-  };
-
   constructor(patcher: DiscordPatcherCore) {
     this.patcher = patcher;
 
     patcher.req("222007");
     this.ReactEv = patcher.req<typeof this.ReactEv>("884691");
     this.DiscordReact = patcher.req<typeof this.DiscordReact>("446674");
-    this.configStore = patcher.req<typeof this.configStore>("845579");
+    initDiscordConfigStore(patcher.req<DiscordConfigStoreModule>("845579"));
     initDiscordUIModule(patcher.req<DiscordUIModule>("77078"));
     initJSXRuntimeModule(patcher.req<JSXRuntimeModule>("37983"));
   }
 
   AllSettingsElement() {
-    const settings = Object.keys(this.configStore).map((key) => {
-      const store = this.configStore[key];
+    const settings = Object.keys(ConfigStore).map((key) => {
+      const store = ConfigStore[key];
       if (
         !store ||
         !store.getSetting ||
@@ -62,10 +59,11 @@ export default class CustomReactComponents {
 
       const value = store.getSetting();
       if (typeof value === "boolean") {
+        const typedStore = store as DiscordConfig<boolean>;
         return (
           <DiscordUI.FormSwitch
-            value={store.useSetting()}
-            onChange={store.updateSetting}
+            value={typedStore.useSetting()}
+            onChange={typedStore.updateSetting}
             note="Boolean"
           >
             {key}
@@ -102,7 +100,11 @@ export default class CustomReactComponents {
   }
 
   primarySettingElement() {
-    const developerMode = this.configStore.DeveloperMode.useSetting();
+    if (0) this.patcher.req("0");
+
+    const developerModeConfig =
+      ConfigStore.DeveloperMode as DiscordConfig<boolean>;
+    const developerMode = developerModeConfig.useSetting();
 
     return (
       <DiscordUI.FormSection
@@ -111,7 +113,7 @@ export default class CustomReactComponents {
       >
         <DiscordUI.FormSwitch
           value={developerMode}
-          onChange={this.configStore.DeveloperMode.updateSetting}
+          onChange={developerModeConfig.updateSetting}
           note="Test Note"
         >
           タイトル
