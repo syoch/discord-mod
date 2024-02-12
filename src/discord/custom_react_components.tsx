@@ -4,7 +4,7 @@ import {
   initJSXRuntimeModule
 } from "wrapped-react/jsx-runtime";
 import DiscordPatcherCore from "./patcher_core";
-import { Store } from "./type/store";
+import { Store } from "./ecosystem/store";
 import DiscordUI, {
   DiscordUIModule,
   initDiscordUIModule

@@ -3,7 +3,7 @@ import waitEnableFor from "../utils/waitenablefor";
 import MessageCustomizer from "./message_customizer";
 import DiscordPatcherCore from "./patcher_core";
 import { ExperimentSerializedState } from "./type/experiment/serialized_state";
-import { Store } from "./type/store";
+import { Store } from "./ecosystem/store";
 import { User } from "./type/user";
 import CustomReactComponents from "./custom_react_components";
 
@@ -26,7 +26,7 @@ export default class DiscordPatcher {
     const isUserModule = (module: object) =>
       Boolean(
         (module as UserModule)?.getUsers &&
-          (module as UserModule)?.getCurrentUser,
+        (module as UserModule)?.getCurrentUser,
       );
 
     type DeveloperMod = {
@@ -106,16 +106,18 @@ export default class DiscordPatcher {
           getSerializedState: () => ExperimentSerializedState;
         };
 
-        const store = (await patcher.getStore("ExperimentStore", (x: Store) =>
-          Boolean((x as ExperimentStore)?.getSerializedState),
-        )) as ExperimentStore;
-
-        const node = await patcher.getNode<{
+        type NodeHandlers = {
           OVERLAY_INITIALIZE: (data: {
             serializedExperimentStore: ExperimentSerializedState;
             user: User;
           }) => void;
-        }>("ExperimentStore");
+        };
+
+        const store = await patcher.getStore<ExperimentStore>("ExperimentStore", (x) =>
+          Boolean(x?.getSerializedState),
+        );
+
+        const node = await patcher.getNode<NodeHandlers>("ExperimentStore");
 
         if (!store || !node) return false;
 
@@ -134,9 +136,11 @@ export default class DiscordPatcher {
       this.patcher_core.patch(
         "Reload|DeveloperExperimentStore",
         async (patcher) => {
-          const store = await patcher.getNode<{
+          type NodeHandlers = {
             CONNECTION_OPEN: () => void;
-          }>("DeveloperExperimentStore");
+          };
+
+          const store = await patcher.getNode<NodeHandlers>("DeveloperExperimentStore");
           if (!store) return false;
 
           store.actionHandler.CONNECTION_OPEN();

@@ -1,6 +1,8 @@
+import { Node } from "./node";
+
 export type DependencyGraph = {
   nodes: {
-    [key: string]: Node
+    [key: string]: Node<object>
   };
   outgoingEdges: {
     [key: string]: string[]

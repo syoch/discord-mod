@@ -1,17 +1,17 @@
 import logger from "../logger";
 import waitEnableFor from "../utils/waitenablefor";
 import { InternalModule, RequireFunction } from "./type/webpack_system";
-import { Store } from "./type/store";
-import { DiscordNode } from "./type/node";
+import { Store } from "./ecosystem/store";
 
 import "../types/discord";
+import { Node } from "./ecosystem/node";
 
 export default class DiscordPatcherCore {
   req: RequireFunction;
 
   stores: Store[];
 
-  nodes: DiscordNode<object>[];
+  nodes: Node<object>[];
 
   constructor() {
     type ModuledStore = { exports: { default: Store } };
@@ -120,26 +120,26 @@ export default class DiscordPatcherCore {
 
   async getNode<Handlers>(
     name: string,
-    concept: (node: DiscordNode<Handlers>) => boolean = () => true,
+    concept: (node: Node<Handlers>) => boolean = () => true,
   ) {
     return waitEnableFor(() => {
       const val = this.nodes.find(
         (x) => x?.name === name,
-      ) as DiscordNode<Handlers>;
-      if (!val) return false;
+      ) as Node<Handlers>;
+      if (!val) return undefined;
 
-      if (!concept(val)) return false;
+      if (!concept(val)) return undefined;
 
       return val;
     });
   }
 
-  async getStore(name: string, concept: (node: Store) => boolean = () => true) {
+  async getStore<S extends Store>(name: string, concept: (node: S) => boolean = () => true) {
     return waitEnableFor(() => {
-      const val = this.stores.find((x) => x.getName() === name);
-      if (!val) return false;
+      const val = this.stores.find((x) => x.getName() === name) as S;
+      if (!val) return undefined;
 
-      if (!concept(val)) return false;
+      if (!concept(val)) return undefined;
 
       return val;
     });

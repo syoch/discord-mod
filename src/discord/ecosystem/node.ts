@@ -1,8 +1,6 @@
-export type Node = {
+export type Node<Handlers> = {
   name: string,
   band: number,
-  actionHandler: {
-    [key: string]: (o: object) => void;
-  }
+  actionHandler: Handlers
   // storeDidChange
 };
