@@ -36,7 +36,7 @@ window.addEventListener(
   () => {
     main()
       .then(() => {
-        logger.info("Global", "Loaded");
+        logger.info("Global", "Loaded!");
       })
       .catch((e) => {
         throw e;
